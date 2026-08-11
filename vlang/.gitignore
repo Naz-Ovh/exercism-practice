@@ -1,0 +1,32 @@
+# V generated files
+#
+# `v run` / `v .` produce executables with NO file extension (e.g. hello-world/hello),
+# which a normal pattern list cannot match. So: ignore everything, then allow
+# source files and Exercism metadata back in.
+
+*
+
+# Always descend into directories so the rules below can match
+!*/
+
+# Source & config
+!*.v
+!*.vsh
+!v.mod
+!vpkg.json
+
+# Exercism docs / metadata
+!*.md
+!*.json
+!*.txt
+!.gitignore
+
+# Explicit build artifacts (also covered by the catch-all above)
+*.exe
+*.so
+*.dll
+*.dylib
+*.a
+*_test
+vls.log
+.bin/

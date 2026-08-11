@@ -1,0 +1,1561 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>বিট অপারেশন — সহজ ভাষায়</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+</head>
+<body>
+
+<style>
+  :root {
+    --ground:   #EDEEF1;
+    --page:     #FBFBFC;
+    --recess:   #E4E6EB;
+    --ink:      #171A20;
+    --ink-dim:  #4E5663;
+    --ink-faint:#828A98;
+    --line:     #CDD2DA;
+    --line-soft:#E1E4EA;
+    --amber:    #B87100;
+    --amber-lit:#F0A020;
+    --amber-ink:#3A2503;
+    --teal:     #1D7488;
+    --teal-soft:#DCEDF1;
+    --rust:     #A8452A;
+
+    --off-bg:   #DADEE4;
+    --off-ink:  #939BA8;
+    --off-edge: #C5CBD3;
+
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --bn: "Noto Sans Bengali", "Hind Siliguri", "Anek Bangla", "Baloo Da 2", "Kalpurush",
+          "SolaimanLipi", "Nirmala UI", "Bangla MN", "Shonar Bangla",
+          system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:  #0E1116;
+      --page:    #161A20;
+      --recess:  #10141A;
+      --ink:     #E9ECF1;
+      --ink-dim: #A3ADBB;
+      --ink-faint:#727B8B;
+      --line:    #2B323C;
+      --line-soft:#222831;
+      --amber:   #F0A020;
+      --amber-lit:#FFB93D;
+      --amber-ink:#231603;
+      --teal:    #58BAD0;
+      --teal-soft:#10303A;
+      --rust:    #E27B57;
+      --off-bg:  #1E232B;
+      --off-ink: #5D6673;
+      --off-edge:#2A313A;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --ground:#EDEEF1; --page:#FBFBFC; --recess:#E4E6EB;
+    --ink:#171A20; --ink-dim:#4E5663; --ink-faint:#828A98;
+    --line:#CDD2DA; --line-soft:#E1E4EA;
+    --amber:#B87100; --amber-lit:#F0A020; --amber-ink:#3A2503;
+    --teal:#1D7488; --teal-soft:#DCEDF1; --rust:#A8452A;
+    --off-bg:#DADEE4; --off-ink:#939BA8; --off-edge:#C5CBD3;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --ground:#0E1116; --page:#161A20; --recess:#10141A;
+    --ink:#E9ECF1; --ink-dim:#A3ADBB; --ink-faint:#727B8B;
+    --line:#2B323C; --line-soft:#222831;
+    --amber:#F0A020; --amber-lit:#FFB93D; --amber-ink:#231603;
+    --teal:#58BAD0; --teal-soft:#10303A; --rust:#E27B57;
+    --off-bg:#1E232B; --off-ink:#5D6673; --off-edge:#2A313A;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--bn);
+    font-size: 18px;
+    line-height: 1.95;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 20px 100px;
+  }
+
+  .sheet {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0 clamp(18px, 5vw, 56px) 64px;
+  }
+
+  /* ---------- টাইপোগ্রাফি ---------- */
+
+  header.top { padding: 58px 0 8px; }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    line-height: 1.4;
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0 0 16px;
+  }
+
+  .lede { font-size: 19px; color: var(--ink-dim); margin: 0; }
+
+  h2 {
+    font-size: 26px;
+    line-height: 1.5;
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0 0 4px;
+  }
+
+  h3 { font-size: 19px; font-weight: 700; margin: 0 0 2px; }
+
+  section {
+    padding-top: 46px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  section > .num {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    border-top: 2px solid var(--ink);
+    padding-top: 10px;
+    margin-bottom: -10px;
+  }
+
+  p { margin: 0; max-width: 62ch; }
+  strong { font-weight: 700; }
+
+  ul.plain {
+    margin: 0; padding-left: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    max-width: 62ch;
+  }
+  ul.plain li::marker { color: var(--teal); }
+
+  code {
+    font-family: var(--mono);
+    font-size: .82em;
+    background: var(--recess);
+    border: 1px solid var(--line-soft);
+    border-radius: 3px;
+    padding: 1px 5px;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.85;
+    background: var(--recess);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--teal);
+    border-radius: 3px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 0;
+  }
+  pre .cm { color: var(--ink-faint); }
+  pre .kw { color: var(--teal); }
+  pre .hl { color: var(--amber); font-weight: 600; }
+
+  /* ---------- চিত্র ---------- */
+
+  figure {
+    margin: 6px 0;
+    background: var(--recess);
+    border: 1px solid var(--line-soft);
+    border-radius: 3px;
+    padding: 22px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-x: auto;
+  }
+  figcaption {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+  figcaption b { color: var(--ink); font-weight: 700; }
+
+  .figtools { display: flex; justify-content: flex-end; margin-top: -8px; }
+
+  button.replay {
+    font-family: var(--bn);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 3px 14px;
+    cursor: pointer;
+    line-height: 1.9;
+  }
+  button.replay:hover { border-color: var(--teal); background: var(--teal-soft); }
+  button.replay:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  /* ---------- বিট ---------- */
+
+  .bitrow { display: flex; gap: 5px; align-items: flex-end; }
+  .bitcell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+
+  .place {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+  }
+
+  .bit {
+    position: relative;
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 600;
+    width: 34px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 3px;
+    border: 1px solid var(--off-edge);
+    background: var(--off-bg);
+    color: var(--off-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: background .25s ease, color .25s ease, border-color .25s ease, outline-color .15s ease;
+  }
+  .bit.on { background: var(--amber-lit); border-color: var(--amber); color: var(--amber-ink); }
+  .bit.mask { background: var(--teal-soft); border-color: var(--teal); color: var(--teal); }
+  .bit.pending { background: transparent; border-style: dashed; color: var(--ink-faint); }
+  .bit.hi { outline: 2px solid var(--teal); outline-offset: 2px; z-index: 2; }
+  .bit.gone { background: transparent; border: 1px dashed var(--rust); color: var(--rust); }
+
+  .bit.carry-in::after {
+    content: "1";
+    position: absolute;
+    top: -17px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rust);
+  }
+
+  .sum {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    min-height: 22px;
+    line-height: 1.6;
+  }
+  .sum b { color: var(--amber); font-weight: 700; }
+
+  .stack { display: flex; align-items: flex-start; gap: 12px; }
+
+  .stack-labels {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-dim);
+    display: flex; flex-direction: column; gap: 5px;
+    text-align: right; min-width: 48px;
+  }
+  .stack-labels span { height: 38px; line-height: 38px; white-space: nowrap; }
+  .stack-labels span.thin { height: 9px; line-height: 9px; }
+  .stack-labels span.tall { height: 57px; line-height: 57px; }
+
+  .stack-rows { display: flex; flex-direction: column; gap: 5px; }
+  .divider { height: 1px; background: var(--line); margin: 4px 0; }
+
+  .result-note {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    min-height: 22px;
+    line-height: 1.7;
+  }
+  .result-note b { color: var(--ink); font-weight: 700; }
+
+  .narrate {
+    font-size: 15.5px;
+    color: var(--ink-dim);
+    min-height: 30px;
+    line-height: 1.8;
+  }
+  .narrate b { color: var(--ink); font-weight: 700; }
+
+  /* ---------- সত্যক সারণি ---------- */
+
+  table.truth {
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    height: fit-content;
+  }
+  table.truth th {
+    font-family: var(--bn);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    padding: 0 14px 7px;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+  table.truth td {
+    padding: 5px 14px;
+    text-align: center;
+    border-bottom: 1px solid var(--line-soft);
+    line-height: 1.7;
+  }
+  table.truth tr:last-child td { border-bottom: none; }
+  table.truth td.res1 { color: var(--amber); font-weight: 700; }
+  table.truth td.res0 { color: var(--ink-faint); }
+
+  /* ---------- অপারেটর ---------- */
+
+  .op-entry {
+    display: flex; flex-direction: column; gap: 14px;
+    padding: 24px 0 6px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .op-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .op-sym { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--amber); }
+  .op-name { font-size: 19px; font-weight: 700; }
+  .op-use {
+    font-size: 13.5px; font-weight: 700;
+    color: var(--teal);
+    margin-left: auto;
+    background: var(--teal-soft);
+    border-radius: 20px;
+    padding: 1px 14px;
+    line-height: 1.9;
+  }
+  .side-by-side { display: flex; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* ---------- কলআউট ---------- */
+
+  .callout {
+    border-left: 3px solid var(--amber);
+    background: var(--recess);
+    border-radius: 0 3px 3px 0;
+    padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .callout .tag {
+    font-size: 12.5px; font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--amber);
+  }
+  .callout p { font-size: 17px; }
+
+  /* ---------- প্রশ্নোত্তর ---------- */
+
+  .qa { display: flex; flex-direction: column; gap: 24px; }
+  .qa-item { display: flex; flex-direction: column; gap: 4px; }
+  .qa-q { font-size: 18px; font-weight: 700; color: var(--ink); }
+  .qa-a { color: var(--ink-dim); max-width: 62ch; }
+  .qa-a code { color: var(--ink); }
+
+  /* ---------- ধাপে ধাপে ---------- */
+
+  .walk {
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--recess);
+    padding: 24px 22px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .walk-line {
+    font-family: var(--mono);
+    font-size: 14.5px;
+    background: var(--page);
+    border: 1px solid var(--line-soft);
+    border-radius: 3px;
+    padding: 11px 15px;
+    overflow-x: auto;
+    white-space: nowrap;
+    line-height: 1.6;
+  }
+  .walk-line .cm { color: var(--ink-faint); }
+
+  .flagrow { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
+  .flag { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .flag .fname { font-size: 12.5px; font-weight: 700; color: var(--ink-faint); line-height: 1.5; }
+  .flag .bit {
+    width: 54px; height: 54px; font-size: 20px;
+    transition: background .35s ease, color .35s ease, border-color .35s ease, transform .25s ease, box-shadow .25s ease;
+  }
+  .flag.changed .bit { transform: translateY(-5px); box-shadow: 0 0 0 3px var(--teal); }
+
+  .walk-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    align-self: flex-end;
+    padding-bottom: 8px;
+  }
+  .walk-value b { color: var(--ink); font-size: 22px; font-weight: 700; }
+
+  .walk-say { font-size: 16px; color: var(--ink-dim); min-height: 62px; max-width: 58ch; line-height: 1.85; }
+  .walk-say b { color: var(--ink); font-weight: 700; }
+
+  .walk-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  button.btn {
+    font-family: var(--bn);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 7px 18px;
+    cursor: pointer;
+    line-height: 1.9;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  button.btn:hover { border-color: var(--teal); color: var(--teal); }
+  button.btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  button.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--page); }
+  button.btn.primary:hover { background: var(--teal); border-color: var(--teal); color: var(--page); }
+  button.btn:disabled { opacity: .45; cursor: not-allowed; }
+  button.btn:disabled:hover { border-color: var(--line); color: var(--ink); }
+
+  .step-count { font-size: 13.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+  /* ---------- রেফারেন্স কার্ড ---------- */
+
+  .cheat {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 1px;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cheat-card {
+    background: var(--page);
+    padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .cheat-card .c-sym { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--amber); line-height: 1.6; }
+  .cheat-card .c-when { font-size: 15px; color: var(--ink-dim); line-height: 1.75; }
+
+  footer {
+    margin-top: 54px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 15px;
+    color: var(--ink-faint);
+    line-height: 1.85;
+  }
+
+  @media (max-width: 620px) {
+    body { font-size: 17px; padding: 0 12px 64px; }
+    .bit { width: 30px; height: 34px; font-size: 15px; }
+    .stack-labels span { height: 34px; line-height: 34px; }
+    .flag .bit { width: 46px; height: 46px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+</style>
+
+<div class="sheet">
+
+<header class="top">
+  <div class="eyebrow">সহজ ভাষায় ব্যাখ্যা</div>
+  <h1>বিট অপারেশন — রহস্য বাদ দিয়ে, একেবারে গোড়া থেকে</h1>
+  <p class="lede">
+    বিট অপারেশন দেখলে মনে হয় গোপন কোনো ভাষা। আসলে তা নয়। এগুলো কয়েকটি সহজ নিয়ম,
+    যা একটি সংখ্যার ভেতরের আলাদা আলাদা সুইচের উপর কাজ করে। এই পাতায় ধাপে ধাপে আসবে —
+    জিনিসটা কী, কীভাবে কাজ করে, কেন দরকার, আর বাস্তব প্রোগ্রামে কোথায় লাগে।
+  </p>
+</header>
+
+<!-- ==================== ১ ==================== -->
+<section>
+  <div class="num">পর্ব ১</div>
+  <h2>বিট আসলে কী</h2>
+
+  <p>
+    <strong>বিট</strong> মানে একটি সুইচ। এর অবস্থা মাত্র দুটি — বন্ধ, যাকে লেখা হয়
+    <code>0</code>, আর চালু, যাকে লেখা হয় <code>1</code>। সংজ্ঞা এটুকুই, এর বেশি কিছু নেই।
+  </p>
+  <p>
+    কম্পিউটারের কাছে কিছু জমা রাখার আর কোনো উপায় নেই। সংখ্যা, লেখা, ছবি, গান — সবই আসলে
+    সুইচের সারি। আটটি সুইচ একসাথে হলে তাকে বলে <strong>বাইট</strong>।
+  </p>
+
+  <figure>
+    <div class="bitrow">
+      <div class="bitcell"><span class="place">বন্ধ</span><div class="bit">0</div></div>
+      <div class="bitcell"><span class="place">চালু</span><div class="bit on">1</div></div>
+    </div>
+    <figcaption>
+      এই পুরো পাতায় <b>জ্বলন্ত কমলা ঘর</b> মানে সুইচটি চালু, আর <b>ধূসর ঘর</b> মানে সুইচটি বন্ধ।
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ==================== ২ ==================== -->
+<section>
+  <div class="num">পর্ব ২</div>
+  <h2>সংখ্যা কীভাবে বিট দিয়ে তৈরি হয়</h2>
+
+  <p>
+    এটা আপনি আগে থেকেই জানেন, কারণ দশমিক সংখ্যাতেও ঠিক এই ব্যাপারটাই ঘটে। 407 সংখ্যাটিতে
+    7 মানে সাতটি <em>এক</em>, 0 মানে শূন্যটি <em>দশ</em>, আর 4 মানে চারটি <em>একশ</em>।
+    প্রতিটি ঘর তার ডান পাশের ঘরের চেয়ে দশ গুণ বড়।
+  </p>
+  <p>
+    বাইনারিও হুবহু তাই, শুধু প্রতিটি ঘর ডান পাশের ঘরের <strong>দুই গুণ</strong> —
+    1, 2, 4, 8, 16, 32, 64, 128। বাইনারি সংখ্যা পড়ার নিয়ম একটাই: যে সুইচগুলো চালু,
+    তাদের ঘরের মান যোগ করুন।
+  </p>
+
+  <figure data-anim="sum" data-value="89">
+    <div class="bitrow" data-bits="89"></div>
+    <div class="sum"></div>
+    <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+    <figcaption>
+      এক বাইটে রাখা <b>89</b> সংখ্যাটি। চারটি সুইচ চালু, আর তাদের ঘরের মান যোগ করলেই 89 হয়।
+      ঘরের উপরের ছোট ধূসর সংখ্যাগুলো কখনো বদলায় না — বদলায় শুধু সুইচগুলো।
+    </figcaption>
+  </figure>
+
+  <p>
+    এখান থেকে দুটো কাজের কথা বেরিয়ে আসে। আটটি সুইচই চালু থাকলে হয়
+    128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = <strong>255</strong>, অর্থাৎ এক বাইটে সর্বোচ্চ এই সংখ্যাই আঁটে।
+    আর সবচেয়ে ডানের ঘরটিই একমাত্র বিজোড় মানের ঘর, তাই কোনো সংখ্যা বিজোড় কি না তা
+    শুধু ওই শেষ সুইচটিই ঠিক করে দেয়।
+  </p>
+</section>
+
+<!-- ==================== ৩ ==================== -->
+<section>
+  <div class="num">পর্ব ৩</div>
+  <h2>তাহলে "বিট অপারেশন" জিনিসটা কী</h2>
+
+  <p>
+    সাধারণ গণিত একটি সংখ্যাকে একটি গোটা পরিমাণ হিসেবে দেখে। <code>12 + 10</code> করার সময়
+    12 একটি একক জিনিস, আর অঙ্কগুলো একে অন্যের ভেতরে হাতে ওঠে।
+  </p>
+  <p>
+    বিট অপারেশন ঠিক উল্টো কাজ করে। এটি সংখ্যাটিকে গোটা পরিমাণ হিসেবে দেখা বন্ধ করে দেয়,
+    দুটি সংখ্যাকে কলাম মিলিয়ে সাজায়, আর <strong>প্রতিটি কলামের সিদ্ধান্ত আলাদাভাবে নেয়</strong>।
+    ৩ নম্বর কলাম জানেই না ৪ নম্বর কলামে কী ঘটছে। কিছু হাতে ওঠে না, কিছু ধার করা হয় না।
+  </p>
+
+  <div class="callout">
+    <span class="tag">যে কথাটি মনে রাখলেই চলবে</span>
+    <p>
+      প্রতিটি বিট অপারেশন আসলে একটিমাত্র ছোট নিয়ম, যা প্রতিটি কলামে আলাদা করে একসাথে প্রয়োগ হয়।
+      একটি কলাম বুঝলেই পুরো অপারেশনটি বোঝা হয়ে গেল — বাকি সাতটি কলামে ওই একই নিয়মেরই পুনরাবৃত্তি।
+    </p>
+  </div>
+
+  <figure data-anim="add" data-a="12" data-b="10">
+    <div class="stack">
+      <div class="stack-labels">
+        <span>12</span><span>+ 10</span><span class="thin"></span><span>=</span>
+      </div>
+      <div class="stack-rows">
+        <div class="bitrow" data-bits="12" data-noplace="1"></div>
+        <div class="bitrow" data-bits="10" data-noplace="1"></div>
+        <div class="divider"></div>
+        <div class="bitrow" data-bits="22" data-noplace="1" data-role="result"></div>
+      </div>
+    </div>
+    <div class="narrate"></div>
+    <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+    <figcaption>
+      <b>সাধারণ যোগ।</b> ডান দিক থেকে বাঁ দিকে এগোতে হয়, কারণ এক কলামের ফল পরের কলামে হাতে ওঠে।
+      লাল <b>1</b> চিহ্নটিই সেই হাতে-ওঠা। খেয়াল করুন, উপরের দুই সারিতে কিছু না থাকা সত্ত্বেও
+      বাঁ দিকের একটি কলাম জ্বলে উঠেছে।
+    </figcaption>
+  </figure>
+
+  <figure data-anim="scan" data-op="&amp;">
+    <div class="stack">
+      <div class="stack-labels">
+        <span>12</span><span>&amp; 10</span><span class="thin"></span><span>=</span>
+      </div>
+      <div class="stack-rows">
+        <div class="bitrow" data-bits="12" data-noplace="1"></div>
+        <div class="bitrow" data-bits="10" data-noplace="1"></div>
+        <div class="divider"></div>
+        <div class="bitrow" data-bits="8" data-noplace="1" data-role="result"></div>
+      </div>
+    </div>
+    <div class="narrate"></div>
+    <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+    <figcaption>
+      <b>একই দুটি সংখ্যার উপর বিট অপারেশন।</b> 12 &amp; 10 = 8। কোনো কলাম অন্য কলামের জন্য
+      অপেক্ষা করছে না — এখানে ক্রম শুধু দেখানোর সুবিধার্থে, বাস্তবে প্রসেসর আটটি কলামই
+      একসাথে হিসাব করে ফেলে।
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ==================== ৪ ==================== -->
+<section>
+  <div class="num">পর্ব ৪</div>
+  <h2>ছয়টি অপারেটর, একটি একটি করে</h2>
+
+  <p>
+    মোট ছয়টি অপারেটর, আর এর মধ্যে চারটির নিয়ম এত ছোট যে চার লাইনের একটি সারণিতেই এঁটে যায়।
+    উদাহরণগুলো Dart-এর লেখা অনুযায়ী, তবে C, Java, JavaScript, Python, Go, Rust — প্রায় সব
+    ভাষাতেই এই চিহ্নগুলো একই।
+  </p>
+
+  <!-- AND -->
+  <div class="op-entry">
+    <div class="op-head">
+      <span class="op-sym">&amp;</span>
+      <span class="op-name">AND — এবং</span>
+      <span class="op-use">কাজ: যাচাই করা বা রেখে দেওয়া</span>
+    </div>
+    <p>ফলাফলের ঘরটি চালু হয় কেবল তখনই, যখন উপরের <strong>দুটি ঘরই</strong> চালু।</p>
+    <div class="side-by-side">
+      <table class="truth" data-truth="&amp;"></table>
+      <figure data-anim="scan" style="flex:1; min-width:280px; margin:0;">
+        <div class="stack">
+          <div class="stack-labels"><span>60</span><span>&amp; 15</span><span class="thin"></span><span>=</span></div>
+          <div class="stack-rows">
+            <div class="bitrow" data-bits="60" data-noplace="1"></div>
+            <div class="bitrow" data-bits="15" data-noplace="1" data-style="mask"></div>
+            <div class="divider"></div>
+            <div class="bitrow" data-bits="12" data-noplace="1" data-role="result"></div>
+          </div>
+        </div>
+        <div class="narrate"></div>
+        <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+        <figcaption>
+          <b>60 &amp; 15 = 12।</b> সবুজ সারিটি কাজ করছে ছাঁচের মতো — যেখানে ছাঁচ বন্ধ,
+          সেখানে ফলাফল জোর করে বন্ধ হয়ে যায়।
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      এ কারণেই AND হলো "যাচাই করার" অপারেটর। যে সুইচটির খবর নিতে চান, শুধু সেটি চালু আছে
+      এমন একটি সংখ্যা দিয়ে AND করুন — বাকি সব মুছে যাবে, থেকে যাবে কেবল ওই এক সুইচের উত্তর।
+    </p>
+  </div>
+
+  <!-- OR -->
+  <div class="op-entry">
+    <div class="op-head">
+      <span class="op-sym">|</span>
+      <span class="op-name">OR — অথবা</span>
+      <span class="op-use">কাজ: চালু করা</span>
+    </div>
+    <p>ফলাফলের ঘরটি চালু হয় যদি উপরের <strong>যেকোনো একটি</strong> ঘর চালু থাকে।</p>
+    <div class="side-by-side">
+      <table class="truth" data-truth="|"></table>
+      <figure data-anim="scan" style="flex:1; min-width:280px; margin:0;">
+        <div class="stack">
+          <div class="stack-labels"><span>5</span><span>| 2</span><span class="thin"></span><span>=</span></div>
+          <div class="stack-rows">
+            <div class="bitrow" data-bits="5" data-noplace="1"></div>
+            <div class="bitrow" data-bits="2" data-noplace="1" data-style="mask"></div>
+            <div class="divider"></div>
+            <div class="bitrow" data-bits="7" data-noplace="1" data-role="result"></div>
+          </div>
+        </div>
+        <div class="narrate"></div>
+        <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+        <figcaption>
+          <b>5 | 2 = 7।</b> আগে থেকে চালু থাকা সুইচগুলো চালুই থাকে। OR কখনো কিছু বন্ধ করে না।
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      শেষ বাক্যটিই OR-এর পুরো উপযোগিতা: আগের কিছু নষ্ট না করে নতুন সুইচ যোগ করে দেওয়া।
+    </p>
+  </div>
+
+  <!-- XOR -->
+  <div class="op-entry">
+    <div class="op-head">
+      <span class="op-sym">^</span>
+      <span class="op-name">XOR — যেকোনো একটি, দুটি নয়</span>
+      <span class="op-use">কাজ: উল্টে দেওয়া</span>
+    </div>
+    <p>ফলাফলের ঘরটি চালু হয় যখন উপরের দুটি ঘর <strong>আলাদা</strong>। একরকম হলে বন্ধ, আলাদা হলে চালু।</p>
+    <div class="side-by-side">
+      <table class="truth" data-truth="^"></table>
+      <figure data-anim="scan" style="flex:1; min-width:280px; margin:0;">
+        <div class="stack">
+          <div class="stack-labels"><span>6</span><span>^ 3</span><span class="thin"></span><span>=</span></div>
+          <div class="stack-rows">
+            <div class="bitrow" data-bits="6" data-noplace="1"></div>
+            <div class="bitrow" data-bits="3" data-noplace="1" data-style="mask"></div>
+            <div class="divider"></div>
+            <div class="bitrow" data-bits="5" data-noplace="1" data-role="result"></div>
+          </div>
+        </div>
+        <div class="narrate"></div>
+        <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+        <figcaption>
+          <b>6 ^ 3 = 5।</b> মাঝের কলামে দুটি ঘরই চালু ছিল, তাই ফলাফল বন্ধ — এই "দুটি একসাথে হলে চলবে না"
+          নিয়মটিই XOR-কে আলাদা করে।
+        </figcaption>
+      </figure>
+    </div>
+    <p>
+      XOR-এর একটি গুণ বাকিদের নেই: একই সংখ্যা দিয়ে দুবার XOR করলে আপনি ঠিক আগের জায়গায় ফিরে আসেন।
+      সুইচ উল্টান, আবার উল্টান — যা ছিল তাই। এই ফিরে আসার ক্ষমতার জন্যই সহজ সাইফার, চেকসাম আর
+      আনডু-জাতীয় কাজে XOR ব্যবহৃত হয়।
+    </p>
+  </div>
+
+  <!-- NOT -->
+  <div class="op-entry">
+    <div class="op-head">
+      <span class="op-sym">~</span>
+      <span class="op-name">NOT — উল্টো</span>
+      <span class="op-use">কাজ: সব উল্টে দেওয়া</span>
+    </div>
+    <p>
+      একমাত্র অপারেটর যেটি দুটি নয়, একটি সংখ্যা নেয়। এটি প্রতিটি সুইচ উল্টে দেয় —
+      চালু হয়ে যায় বন্ধ, বন্ধ হয়ে যায় চালু।
+    </p>
+    <figure data-anim="scan">
+      <div class="stack">
+        <div class="stack-labels"><span>5</span><span class="thin"></span><span>~5</span></div>
+        <div class="stack-rows">
+          <div class="bitrow" data-bits="5" data-noplace="1"></div>
+          <div class="divider"></div>
+          <div class="bitrow" data-bits="250" data-noplace="1" data-role="result"></div>
+        </div>
+      </div>
+      <div class="narrate"></div>
+      <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+      <figcaption>
+        প্রতিটি সুইচ উল্টে গেছে। তবে সাবধান — Dart-এ <code>~5</code> লিখলে ফল আসে <b>-6</b>,
+        250 নয়। কারণ Dart-এর সংখ্যা আট সুইচে সীমাবদ্ধ নয়, আর বাঁ দিকের চালু সুইচগুলো
+        সংখ্যাটিকে ঋণাত্মক বানিয়ে দেয়। বাস্তবে NOT প্রায় সবসময় <em>AND-এর সঙ্গে জুড়ে</em>
+        ব্যবহার হয় (পর্ব ৬), সেখানে এই সমস্যাটি আর থাকে না।
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- SHIFT -->
+  <div class="op-entry">
+    <div class="op-head">
+      <span class="op-sym">&lt;&lt;&nbsp;&nbsp;&gt;&gt;</span>
+      <span class="op-name">শিফট — বাঁয়ে সরানো, ডানে সরানো</span>
+      <span class="op-use">কাজ: সুইচ সরিয়ে নেওয়া</span>
+    </div>
+    <p>
+      এই দুটি কিছু মেলায় না। এরা সবগুলো সুইচকে একসঙ্গে পাশে সরিয়ে দেয়।
+      <code>n &lt;&lt; 1</code> মানে এক ঘর বাঁয়ে, <code>n &gt;&gt; 3</code> মানে তিন ঘর ডানে।
+    </p>
+    <figure data-anim="shift" data-value="200" data-times="3">
+      <div class="stack">
+        <div class="stack-labels"><span class="tall">মান</span></div>
+        <div class="stack-rows">
+          <div class="bitrow" data-bits="200" data-role="result"></div>
+        </div>
+      </div>
+      <div class="result-note"></div>
+      <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+      <figcaption>
+        <b>200 &gt;&gt; 3 = 25।</b> প্রতিটি সুইচ তিন ঘর ডানে সরেছে। ডান দিকের প্রতিটি ঘর আগেরটির
+        অর্ধেক মানের, তাই তিন ঘর ডানে সরানো মানে পরপর তিনবার দুই দিয়ে ভাগ: 200 → 100 → 50 → 25।
+        ডান প্রান্ত পেরিয়ে যাওয়া সুইচ চিরতরে হারিয়ে যায়।
+      </figcaption>
+    </figure>
+    <p>
+      বাঁয়ে শিফট ঠিক উল্টো কাজ করে, অর্থাৎ দ্বিগুণ করে। <code>1 &lt;&lt; 3</code> মানে 8,
+      কারণ একমাত্র চালু সুইচটি 1-এর ঘর থেকে সরে 8-এর ঘরে চলে যায়। "শুধু ৩ নম্বর সুইচটি চালু আছে
+      এমন একটি সংখ্যা" বোঝাতে প্রোগ্রামাররা সাধারণত এভাবেই লেখেন।
+    </p>
+  </div>
+</section>
+
+<!-- ==================== ৫ ==================== -->
+<section>
+  <div class="num">পর্ব ৫</div>
+  <h2>এসবের দরকারটা কোথায়</h2>
+
+  <p>
+    বিট অপারেশন কারো বানানো কোনো চালাকি নয় — প্রসেসর শারীরিকভাবে এই কাজটিই করে।
+    CPU-র ভেতরে সত্যি সত্যিই AND গেট আর OR গেট নামের বর্তনী থাকে, তাই এই কাজগুলো এক
+    ক্লক সাইকেলেই শেষ হয়। কম্পিউটারের দ্রুততম নির্দেশগুলোর মধ্যে এগুলো পড়ে; এর চেয়ে
+    সস্তা কিছু আপনি লিখতে পারবেন না।
+  </p>
+  <p>গতি ছাড়াও প্রতিদিনের কাজে এগুলো টিকে আছে তিনটি কারণে।</p>
+
+  <h3>১. অনেকগুলো হ্যাঁ/না উত্তর অল্প জায়গায় আঁটে</h3>
+  <p>
+    আটটি আলাদা সত্য/মিথ্যা মান রাখতে সাধারণত আট বাইট লাগে, কারণ বেশিরভাগ ভাষায় প্রতিটি
+    বুলিয়ান নিজের একটি বাইট দখল করে। একই আটটি উত্তর বিট হিসেবে রাখলে লাগে
+    <strong>মাত্র এক বাইট</strong> — আট গুণ কম। লক্ষ লক্ষ রেকর্ড থাকলে এই পার্থক্যই ঠিক করে দেয়
+    ডেটা মেমোরিতে আঁটবে কি না।
+  </p>
+
+  <figure data-anim="sum" data-value="181" data-mode="flags">
+    <div class="bitrow" data-bits="181" data-noplace="1"></div>
+    <div class="sum"></div>
+    <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+    <figcaption>
+      একটিমাত্র বাইটের ভেতরে আটটি স্বাধীন হ্যাঁ/না উত্তর।
+    </figcaption>
+  </figure>
+
+  <h3>২. কিছু ডেটা আসলেই বিট দিয়ে বানানো</h3>
+  <p>
+    আপনি নাম না জেনেই এমন ডেটা ব্যবহার করেছেন। টার্মিনালে <code>chmod 755</code> লিখলে
+    ওই প্রতিটি অঙ্ক আসলে তিনটি বিট — পড়া, লেখা, চালানো। 7 মানে <code>111</code>: তিনটিই অনুমোদিত।
+    5 মানে <code>101</code>: পড়া আর চালানো যাবে, লেখা যাবে না। নেটওয়ার্কের সাবনেট মাস্ক,
+    রঙের মান, ফাইল ফরম্যাটের হেডার, হার্ডওয়্যার রেজিস্টার — সবই এভাবে সাজানো।
+    এই ডেটা পড়তে হলে এই অপারেটরগুলো লাগবেই।
+  </p>
+
+  <h3>৩. একটি ভেরিয়েবলেই অনেকগুলো অপশন রাখা যায়</h3>
+  <p>
+    আটটি আলাদা বুলিয়ান প্যারামিটার পাঠানোর বদলে একটি ফাংশন একটিমাত্র সংখ্যা নিতে পারে,
+    যেখানে প্রতিটি বিট একটি অপশন। এ কারণেই লাইব্রেরিতে এমন লেখা চোখে পড়ে —
+    <code>open(path, READ | CREATE | APPEND)</code>। ওই <code>|</code> চিহ্নটি OR, যা তিনটি
+    এক-বিটের মানকে জুড়ে একটি সংখ্যা বানিয়ে দিচ্ছে।
+  </p>
+
+  <div class="callout">
+    <span class="tag">সৎ কথাটাও বলে রাখা দরকার</span>
+    <p>
+      দৈনন্দিন অ্যাপ্লিকেশনের কোডে বিট অপারেশন <em>লাগে না</em>। আর <code>n * 2</code>-এর বদলে
+      চালাক দেখাতে <code>n &lt;&lt; 1</code> লিখলে কোড খারাপই হয় — কম্পাইলার ওই অপ্টিমাইজেশন
+      নিজেই করে দেয়। ডেটা যখন সত্যিই বিট দিয়ে সাজানো, কেবল তখনই এগুলো ধরুন।
+    </p>
+  </div>
+</section>
+
+<!-- ==================== ৬ ==================== -->
+<section>
+  <div class="num">পর্ব ৬</div>
+  <h2>বাস্তবে কী কাজে লাগে</h2>
+
+  <p>
+    পাঁচটি ধরন দিয়েই প্রায় সব কাজ চলে যায়। এগুলো ধাঁধা হিসেবে প্রতিবার নতুন করে না ভেবে,
+    বাক্য হিসেবে মুখস্থ রাখাই ভালো।
+  </p>
+
+  <h3>নির্দিষ্ট একটি বিট চালু কি না দেখা</h3>
+  <pre><span class="cm">// ৩ নম্বর সুইচটি কি চালু?</span>
+<span class="kw">if</span> ((value <span class="hl">&amp;</span> (1 &lt;&lt; 3)) != 0) { ... }</pre>
+  <p>
+    শুধু ওই এক সুইচ চালু আছে এমন সংখ্যা দিয়ে AND করুন। বাকি সব ঢাকা পড়ে যাবে, ফলে ফলাফল
+    শূন্যের চেয়ে বড় হবে কেবল তখনই যখন সুইচটি চালু ছিল।
+  </p>
+
+  <h3>বিট চালু করা, বন্ধ করা, উল্টে দেওয়া</h3>
+  <pre>value <span class="hl">|=</span> flag;    <span class="cm">// চালু — OR বসিয়ে দেয়, বাকিদের ছোঁয় না</span>
+value <span class="hl">&amp;= ~</span>flag;   <span class="cm">// বন্ধ — "এটি ছাড়া সব" দিয়ে AND</span>
+value <span class="hl">^=</span> flag;    <span class="cm">// উল্টো — XOR শুধু ওই একটিকে বদলায়</span></pre>
+  <p>
+    এই তিন লাইনের জন্যই NOT অপারেটরটির অস্তিত্ব। <code>~flag</code> মানে "এই সুইচটি বাদে
+    বাকি সব", আর তার সঙ্গে AND করলে ঠিক একটি সুইচ বন্ধ হয়, বাকিরা অক্ষত থাকে।
+  </p>
+
+  <h3>জোড় না বিজোড় দেখা</h3>
+  <pre><span class="kw">bool</span> isOdd = (n <span class="hl">&amp; 1</span>) == 1;</pre>
+  <p>
+    ডানদিকের ঘরটির মান 1, আর বাকি সব ঘরের মান জোড়। তাই যোগফল বিজোড় হবে কি না, তা
+    একা ওই শেষ বিটটিই ঠিক করে।
+  </p>
+
+  <h3>জোড়া-লাগানো ডেটা থেকে এক টুকরো বের করা</h3>
+  <pre><span class="cm">// 0xRRGGBB আকারে রাখা একটি রঙ</span>
+<span class="kw">int</span> red   = (colour <span class="hl">&gt;&gt; 16</span>) &amp; 0xFF;
+<span class="kw">int</span> green = (colour <span class="hl">&gt;&gt; 8</span>)  &amp; 0xFF;
+<span class="kw">int</span> blue  =  colour         &amp; 0xFF;</pre>
+
+  <figure data-anim="extract" data-value="183">
+    <div class="stack">
+      <div class="stack-labels">
+        <span id="ex-l1">মান</span><span id="ex-l2">&gt;&gt; 4</span><span>&amp; 0x0F</span><span class="thin"></span><span>=</span>
+      </div>
+      <div class="stack-rows">
+        <div class="bitrow" data-bits="183" data-noplace="1"></div>
+        <div class="bitrow" data-bits="11" data-noplace="1" data-role="shifted"></div>
+        <div class="bitrow" data-bits="15" data-noplace="1" data-style="mask"></div>
+        <div class="divider"></div>
+        <div class="bitrow" data-bits="11" data-noplace="1" data-role="result"></div>
+      </div>
+    </div>
+    <div class="narrate"></div>
+    <div class="figtools"><button class="replay" type="button">আবার দেখুন</button></div>
+    <figcaption>
+      <b>দুই ধাপের কৌশল: আগে সরাও, পরে ছাঁকো।</b> যে টুকরোটি দরকার সেটিকে শিফট করে নিচে নামিয়ে আনুন,
+      তারপর <code>0x0F</code> দিয়ে AND করে উপরের অপ্রয়োজনীয় বিটগুলো ফেলে দিন। রঙের উদাহরণে
+      <code>0xFF</code> মানে আটটি চালু বিট, অর্থাৎ ঠিক এক বাইট রেখে বাকিটা বাদ।
+    </figcaption>
+  </figure>
+
+  <h3>ফ্ল্যাগ বানানোর সময় শিফট ব্যবহার করা</h3>
+  <pre><span class="kw">const</span> read    = 1 <span class="hl">&lt;&lt;</span> 2;   <span class="cm">// 4  → 100</span>
+<span class="kw">const</span> write   = 1 <span class="hl">&lt;&lt;</span> 1;   <span class="cm">// 2  → 010</span>
+<span class="kw">const</span> execute = 1 <span class="hl">&lt;&lt;</span> 0;   <span class="cm">// 1  → 001</span></pre>
+  <p>
+    এভাবে লিখলে চোখেই ধরা পড়ে যে প্রতিটি ফ্ল্যাগ আলাদা একটি সুইচ দখল করেছে, কেউ কারো
+    সঙ্গে ধাক্কা খাচ্ছে না। পর্ব ৫-এর <code>chmod</code> ব্যবস্থাটি হুবহু এটাই।
+  </p>
+</section>
+
+<!-- ==================== ৭ ==================== -->
+<section>
+  <div class="num">পর্ব ৭</div>
+  <h2>যেসব জায়গায় সবচেয়ে বেশি গুলিয়ে যায়</h2>
+
+  <div class="qa">
+    <div class="qa-item">
+      <div class="qa-q"><code>&amp;</code> আর <code>&amp;&amp;</code> কি একই জিনিস?</div>
+      <div class="qa-a">
+        না, আর এই দুটি গুলিয়ে ফেলাই সবচেয়ে সাধারণ ভুল। <code>&amp;&amp;</code> কাজ করে সত্য/মিথ্যা
+        মানের উপর, ফল দেয় সত্য বা মিথ্যা। <code>&amp;</code> কাজ করে গোটা সংখ্যার বিটগুলোর উপর,
+        ফল দেয় একটি সংখ্যা। <code>5 &amp; 3</code>-এর উত্তর <code>1</code>, কোনো বুলিয়ান নয়।
+        Dart-এ এদের অদলবদল করাই যায় না — কম্পাইলার ধরে ফেলে, যা আসলে উপকারই করে।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">সবাই 255 না লিখে <code>0xFF</code> লেখে কেন?</div>
+      <div class="qa-a">
+        কারণ একটি হেক্স অঙ্ক ঠিক চারটি বিটের সমান, ফলে হেক্স আর বাইনারি নিখুঁতভাবে মিলে যায় —
+        দশমিক যা কখনোই পারে না। <code>0xFF</code> দেখলেই বোঝা যায় আটটি বিটই চালু;
+        255 দেখে বুঝতে এক মুহূর্ত ভাবতে হয়। বিট নিয়ে কাজ করলে হেক্স পড়াই সহজ।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">দুটি সংখ্যার ক্রম বদলালে কি ফল বদলায়?</div>
+      <div class="qa-a">
+        <code>&amp;</code>, <code>|</code> আর <code>^</code>-এর ক্ষেত্রে না — <code>a &amp; b</code>
+        সবসময় <code>b &amp; a</code>-এর সমান, কারণ প্রতিটি কলাম দুটি বিটকেই সমানভাবে প্রশ্ন করে।
+        শিফটের ক্ষেত্রে ক্রম পুরোপুরি জরুরি: <code>a &lt;&lt; b</code> আর <code>b &lt;&lt; a</code>
+        সম্পূর্ণ আলাদা জিনিস।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q"><code>&gt;&gt; 1</code> কি হুবহু ২ দিয়ে ভাগের সমান?</div>
+      <div class="qa-a">
+        ধনাত্মক সংখ্যার জন্য হ্যাঁ। ঋণাত্মক হলে পার্থক্য আছে: Dart-এ <code>-7 &gt;&gt; 1</code>
+        দেয় <code>-4</code>, কিন্তু <code>-7 ~/ 2</code> দেয় <code>-3</code>। শিফট নিচের দিকে
+        রাউন্ড করে, ভাগ শূন্যের দিকে রাউন্ড করে। ঋণাত্মক সংখ্যার সম্ভাবনা থাকলে ভাগই ব্যবহার করুন।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">বন্ধনী কি দিতেই হবে?</div>
+      <div class="qa-a">
+        দেওয়াই ভালো। এখানকার প্রাধান্যের নিয়ম সত্যিই অবাক করার মতো:
+        <code>1 &lt;&lt; 2 + 3</code>-এর উত্তর <code>32</code>, 7 নয় — কারণ <code>+</code> চিহ্নটি
+        <code>&lt;&lt;</code>-এর আগে কাজ করে। তুলনার ক্ষেত্রে Dart, C বা JavaScript-এর চেয়ে বন্ধুসুলভ,
+        কিন্তু কোড পড়তে বসে কেউই ওই তালিকা মনে রাখে না। বন্ধনীর দাম শূন্য।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">প্রান্ত পেরিয়ে যাওয়া বিটগুলোর কী হয়?</div>
+      <div class="qa-a">
+        সেগুলো চিরতরে মুছে যায়। ডানে শিফট করলে ছোট বিটগুলো শূন্যে মিলিয়ে যায়, এ কারণেই
+        <code>&gt;&gt;</code> ভাগশেষ হারায়। নির্দিষ্ট মাপের টাইপে বাঁয়ে অনেকদূর শিফট করলে
+        বিট উপরের প্রান্ত দিয়ে পড়ে যায় আর মান ঘুরে যায়। Dart-এর সাধারণ <code>int</code> ঘোরে না,
+        বরং বড় হয় — তাই এই সমস্যা মূলত অন্য ভাষায় ভোগায়।
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">এগুলো ব্যবহার করতে কি মাথায় বাইনারি ভাবতে হবে?</div>
+      <div class="qa-a">
+        না। কেউই মনে মনে সংখ্যা রূপান্তর করে না। আপনি ভাববেন <em>কোন সুইচের মানে কী</em> —
+        যেমন "২ নম্বর সুইচ মানে লেখার অনুমতি" — বাকিটা অপারেটর সামলাবে। বাইনারি হলো
+        চিন্তা করার ছবি, হিসাব করার ফরম্যাট নয়।
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ৮ ==================== -->
+<section>
+  <div class="num">পর্ব ৮</div>
+  <h2>পুরো প্রক্রিয়াটি ধাপে ধাপে</h2>
+
+  <p>
+    উপরের সবকিছু এখন একটি বাস্তব কাজে একসাথে দেখা যাক: একটি ফাইলের অনুমতি সামলানো,
+    যেখানে তিনটি সুইচ একটিমাত্র সংখ্যায় রাখা আছে। <strong>পরের ধাপ</strong> চাপুন আর দেখুন
+    কোন সুইচ কেন বদলাচ্ছে।
+  </p>
+
+  <div class="walk">
+    <div class="walk-line" id="w-line">int perms = 0;</div>
+    <div class="flagrow">
+      <div class="flag" id="flag-read"><span class="fname">পড়া · 4</span><div class="bit">0</div></div>
+      <div class="flag" id="flag-write"><span class="fname">লেখা · 2</span><div class="bit">0</div></div>
+      <div class="flag" id="flag-exec"><span class="fname">চালানো · 1</span><div class="bit">0</div></div>
+      <div class="walk-value">perms = <b id="w-value">0</b></div>
+    </div>
+    <p class="walk-say" id="w-say">
+      এখনো কোনো অনুমতি দেওয়া হয়নি। তিনটি সুইচই বন্ধ, তাই সংখ্যাটি <b>0</b>।
+    </p>
+    <div class="walk-controls">
+      <button class="btn primary" id="w-next" type="button">পরের ধাপ</button>
+      <button class="btn" id="w-auto" type="button">নিজে থেকে চলুক</button>
+      <button class="btn" id="w-restart" type="button">আবার শুরু</button>
+      <span class="step-count" id="w-count">ধাপ 0 / 6</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== রেফারেন্স ==================== -->
+<section>
+  <div class="num">সারসংক্ষেপ</div>
+  <h2>এক কার্ডে পুরোটা</h2>
+
+  <div class="cheat">
+    <div class="cheat-card">
+      <span class="c-sym">a &amp; b</span>
+      <span class="c-when">দুটোই চালু হলে চালু। <em>বিট যাচাই করা, বা বেছে রাখা।</em></span>
+    </div>
+    <div class="cheat-card">
+      <span class="c-sym">a | b</span>
+      <span class="c-when">যেকোনো একটি চালু হলেই চালু। <em>বিট চালু করা।</em></span>
+    </div>
+    <div class="cheat-card">
+      <span class="c-sym">a ^ b</span>
+      <span class="c-when">আলাদা হলে চালু। <em>বিট উল্টানো; দুবার করলে আগের অবস্থা।</em></span>
+    </div>
+    <div class="cheat-card">
+      <span class="c-sym">~a</span>
+      <span class="c-when">সব বিট উল্টে দেয়। <em>বিট বন্ধ করতে &amp;-এর সঙ্গে ব্যবহার হয়।</em></span>
+    </div>
+    <div class="cheat-card">
+      <span class="c-sym">a &lt;&lt; n</span>
+      <span class="c-when">n ঘর বাঁয়ে। <em>n বার দ্বিগুণ; ফ্ল্যাগ বানাতে কাজে লাগে।</em></span>
+    </div>
+    <div class="cheat-card">
+      <span class="c-sym">a &gt;&gt; n</span>
+      <span class="c-when">n ঘর ডানে। <em>n বার অর্ধেক; টুকরো নিচে নামাতে কাজে লাগে।</em></span>
+    </div>
+  </div>
+
+  <footer>
+    একটি বাক্য যদি মনে রাখেন, এটিই রাখুন — বিট অপারেশন প্রতিটি কলামে একটিমাত্র ছোট নিয়ম
+    আলাদাভাবে প্রয়োগ করে, আর এক কলাম থেকে আরেক কলামে কিছুই হাতে ওঠে না।
+  </footer>
+</section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var PLACES = [128, 64, 32, 16, 8, 4, 2, 1];
+  var W = 8;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function bitsOf(v, width) {
+    var out = [];
+    for (var i = width - 1; i >= 0; i--) out.push((v >> i) & 1);
+    return out;
+  }
+  function wait(ms) {
+    return new Promise(function (res) { setTimeout(res, reduced ? 0 : ms); });
+  }
+
+  /* ---------- স্থির বিট সারি তৈরি ---------- */
+
+  function paint(box, bit, style) {
+    box.className = "bit" + (bit ? (style === "mask" ? " mask" : " on") : "");
+    box.textContent = String(bit);
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bits]"), function (row) {
+    var value = parseInt(row.getAttribute("data-bits"), 10);
+    var showPlaces = !row.hasAttribute("data-noplace");
+    var style = row.getAttribute("data-style");
+    var b = bitsOf(value, W);
+
+    row._boxes = [];
+    row._final = b;
+    row._style = style;
+
+    b.forEach(function (bit, i) {
+      var cell = document.createElement("div");
+      cell.className = "bitcell";
+      if (showPlaces) {
+        var p = document.createElement("span");
+        p.className = "place";
+        p.textContent = PLACES[i];
+        cell.appendChild(p);
+      }
+      var box = document.createElement("div");
+      paint(box, bit, style);
+      cell.appendChild(box);
+      row.appendChild(cell);
+      row._boxes.push(box);
+    });
+  });
+
+  function setRow(row, value) {
+    var b = bitsOf(value, W);
+    row._final = b;
+    b.forEach(function (bit, i) { paint(row._boxes[i], bit, row._style); });
+  }
+
+  /* ---------- সত্যক সারণি ---------- */
+
+  var TRUTH = {
+    "&": function (a, b) { return a & b; },
+    "|": function (a, b) { return a | b; },
+    "^": function (a, b) { return a ^ b; }
+  };
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-truth]"), function (table) {
+    var sym = table.getAttribute("data-truth");
+    var fn = TRUTH[sym];
+    var html = "<thead><tr><th>a</th><th>b</th><th>a " + sym + " b</th></tr></thead><tbody>";
+    [[0, 0], [0, 1], [1, 0], [1, 1]].forEach(function (p) {
+      var r = fn(p[0], p[1]);
+      html += "<tr><td>" + p[0] + "</td><td>" + p[1] + "</td>" +
+              '<td class="res' + r + '">' + r + "</td></tr>";
+    });
+    table.innerHTML = html + "</tbody>";
+  });
+
+  /* ---------- অ্যানিমেশন নিবন্ধন ---------- */
+
+  var running = new WeakMap();
+
+  function register(fig, play) {
+    var btn = fig.querySelector(".replay");
+    var go = function () {
+      if (running.get(fig)) return;
+      running.set(fig, true);
+      Promise.resolve(play()).then(function () { running.set(fig, false); });
+    };
+    if (btn) btn.addEventListener("click", go);
+
+    if (reduced) return;
+    var seen = false;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && !seen) { seen = true; go(); }
+      });
+    }, { threshold: 0.3 });
+    io.observe(fig);
+  }
+
+  /* ---------- ১. যোগফল অ্যানিমেশন ---------- */
+
+  function animSum(fig) {
+    var row = fig.querySelector(".bitrow");
+    var out = fig.querySelector(".sum");
+    var value = parseInt(fig.getAttribute("data-value"), 10);
+    var flags = fig.getAttribute("data-mode") === "flags";
+    var b = bitsOf(value, W);
+
+    return function () {
+      b.forEach(function (_, i) { paint(row._boxes[i], 0); });
+      out.innerHTML = "&nbsp;";
+      var parts = [], total = 0;
+
+      var chain = Promise.resolve();
+      b.forEach(function (bit, i) {
+        chain = chain.then(function () {
+          return wait(230).then(function () {
+            row._boxes[i].classList.add("hi");
+            paint(row._boxes[i], bit);
+            if (bit) {
+              total += PLACES[i];
+              parts.push(PLACES[i]);
+            }
+            if (flags) {
+              parts.push(bit ? "হ্যাঁ" : "না");
+              out.innerHTML = parts.join(" · ");
+            } else {
+              out.innerHTML = parts.length
+                ? parts.join(" + ") + " = <b>" + total + "</b>"
+                : "&nbsp;";
+            }
+            return wait(180).then(function () { row._boxes[i].classList.remove("hi"); });
+          });
+        });
+      });
+
+      return chain.then(function () {
+        if (flags) {
+          out.innerHTML = parts.join(" · ") + " — আটটি উত্তর, এক বাইট, মান <b>" + value + "</b>";
+        }
+      });
+    };
+  }
+
+  /* ---------- ২. কলাম স্ক্যান (AND / OR / XOR / NOT) ---------- */
+
+  function animScan(fig) {
+    var rows = Array.prototype.slice.call(fig.querySelectorAll(".bitrow"));
+    var result = fig.querySelector('[data-role="result"]');
+    var inputs = rows.filter(function (r) { return r !== result; });
+    var say = fig.querySelector(".narrate");
+    var final = result._final.slice();
+
+    return function () {
+      final.forEach(function (_, i) {
+        result._boxes[i].className = "bit pending";
+        result._boxes[i].textContent = "·";
+      });
+      if (say) say.innerHTML = "&nbsp;";
+
+      var chain = Promise.resolve();
+      final.forEach(function (bit, i) {
+        chain = chain.then(function () {
+          return wait(240).then(function () {
+            inputs.forEach(function (r) { r._boxes[i].classList.add("hi"); });
+            result._boxes[i].classList.add("hi");
+
+            var reading = inputs.map(function (r) { return r._final[i]; });
+            if (say) {
+              var lhs = reading.join(" ও ");
+              say.innerHTML = inputs.length > 1
+                ? "কলাম " + (i + 1) + " — উপরে " + lhs + ", তাই ফল <b>" + bit + "</b>"
+                : "কলাম " + (i + 1) + " — উপরে " + lhs + ", উল্টে ফল <b>" + bit + "</b>";
+            }
+            paint(result._boxes[i], bit, result._style);
+            result._boxes[i].classList.add("hi");
+
+            return wait(170).then(function () {
+              inputs.forEach(function (r) { r._boxes[i].classList.remove("hi"); });
+              result._boxes[i].classList.remove("hi");
+            });
+          });
+        });
+      });
+
+      return chain.then(function () {
+        if (say) say.innerHTML = "আটটি কলামই আলাদা আলাদা নিয়মে ঠিক হলো — কেউ কারো উপর নির্ভর করেনি।";
+      });
+    };
+  }
+
+  /* ---------- ৩. হাতে-ওঠা সহ যোগ ---------- */
+
+  function animAdd(fig) {
+    var rows = Array.prototype.slice.call(fig.querySelectorAll(".bitrow"));
+    var result = fig.querySelector('[data-role="result"]');
+    var inputs = rows.filter(function (r) { return r !== result; });
+    var say = fig.querySelector(".narrate");
+    var a = parseInt(fig.getAttribute("data-a"), 10);
+    var b = parseInt(fig.getAttribute("data-b"), 10);
+    var ab = bitsOf(a, W), bb = bitsOf(b, W);
+
+    return function () {
+      result._final.forEach(function (_, i) {
+        result._boxes[i].className = "bit pending";
+        result._boxes[i].textContent = "·";
+      });
+      inputs.forEach(function (r) {
+        r._boxes.forEach(function (box) { box.classList.remove("carry-in"); });
+      });
+      if (say) say.innerHTML = "&nbsp;";
+
+      var carry = 0;
+      var chain = Promise.resolve();
+
+      for (var k = W - 1; k >= 0; k--) {
+        (function (i) {
+          chain = chain.then(function () {
+            return wait(320).then(function () {
+              inputs.forEach(function (r) { r._boxes[i].classList.add("hi"); });
+              result._boxes[i].classList.add("hi");
+
+              var total = ab[i] + bb[i] + carry;
+              var digit = total % 2;
+              var newCarry = total > 1 ? 1 : 0;
+
+              paint(result._boxes[i], digit);
+              result._boxes[i].classList.add("hi");
+
+              if (say) {
+                say.innerHTML = carry
+                  ? "কলাম " + (i + 1) + " — " + ab[i] + " + " + bb[i] + " + হাতে-ওঠা 1 = " + total +
+                    ", লেখা হলো <b>" + digit + "</b>"
+                  : "কলাম " + (i + 1) + " — " + ab[i] + " + " + bb[i] + " = " + total +
+                    ", লেখা হলো <b>" + digit + "</b>";
+              }
+
+              if (newCarry && i > 0) {
+                inputs[0]._boxes[i - 1].classList.add("carry-in");
+                if (say) {
+                  say.innerHTML += " — আর <b>1</b> হাতে উঠে বাঁ পাশের কলামে গেল";
+                }
+              }
+              carry = newCarry;
+
+              return wait(230).then(function () {
+                inputs.forEach(function (r) { r._boxes[i].classList.remove("hi"); });
+                result._boxes[i].classList.remove("hi");
+              });
+            });
+          });
+        })(k);
+      }
+
+      return chain.then(function () {
+        if (say) say.innerHTML = "হাতে-ওঠার কারণেই কলামগুলো একে অন্যের সঙ্গে জড়িয়ে গেল। বিট অপারেশনে এটি কখনো হয় না।";
+      });
+    };
+  }
+
+  /* ---------- ৪. শিফট ---------- */
+
+  function animShift(fig) {
+    var row = fig.querySelector('[data-role="result"]');
+    var note = fig.querySelector(".result-note");
+    var start = parseInt(fig.getAttribute("data-value"), 10);
+    var times = parseInt(fig.getAttribute("data-times"), 10);
+
+    return function () {
+      setRow(row, start);
+      note.innerHTML = "শুরুর মান <b>" + start + "</b>";
+      var v = start;
+      var chain = Promise.resolve();
+
+      for (var k = 0; k < times; k++) {
+        (function (step) {
+          chain = chain.then(function () {
+            return wait(700).then(function () {
+              var lost = v & 1;
+              var before = v;
+              v = v >> 1;
+              setRow(row, v);
+              row._boxes.forEach(function (box) { box.classList.add("hi"); });
+              note.innerHTML = (step + 1) + " নম্বর শিফট — " + before + " &gt;&gt; 1 = <b>" + v +
+                               "</b>, ডান প্রান্ত দিয়ে পড়ে গেল " + lost;
+              return wait(300).then(function () {
+                row._boxes.forEach(function (box) { box.classList.remove("hi"); });
+              });
+            });
+          });
+        })(k);
+      }
+
+      return chain.then(function () {
+        return wait(400).then(function () {
+          note.innerHTML = "তিনবার অর্ধেক হয়ে মান দাঁড়াল <b>" + v + "</b> — অর্থাৎ 200 &gt;&gt; 3";
+        });
+      });
+    };
+  }
+
+  /* ---------- ৫. সরাও-তারপর-ছাঁকো ---------- */
+
+  function animExtract(fig) {
+    var rows = Array.prototype.slice.call(fig.querySelectorAll(".bitrow"));
+    var source = rows[0];
+    var shifted = fig.querySelector('[data-role="shifted"]');
+    var mask = rows[2];
+    var result = fig.querySelector('[data-role="result"]');
+    var say = fig.querySelector(".narrate");
+    var value = parseInt(fig.getAttribute("data-value"), 10);
+    var shiftedValue = value >> 4;
+    var finalValue = shiftedValue & 0x0F;
+
+    return function () {
+      setRow(shifted, value);
+      [shifted, result].forEach(function (r) {
+        r._boxes.forEach(function (box) { box.className = "bit pending"; box.textContent = "·"; });
+      });
+      say.innerHTML = "শুরুতে আছে পুরো মান <b>" + value + "</b> — এর নিচের চার বিটই আমাদের দরকার নয়।";
+
+      return wait(900).then(function () {
+        setRow(shifted, shiftedValue);
+        shifted._boxes.forEach(function (box) { box.classList.add("hi"); });
+        say.innerHTML = "<b>ধাপ ১ — সরাও।</b> চার ঘর ডানে শিফট করায় দরকারি টুকরোটি একেবারে ডান প্রান্তে নেমে এল।";
+        return wait(1100);
+      }).then(function () {
+        shifted._boxes.forEach(function (box) { box.classList.remove("hi"); });
+        say.innerHTML = "<b>ধাপ ২ — ছাঁকো।</b> 0x0F মানে নিচের চারটি বিট চালু, উপরের চারটি বন্ধ। এই ছাঁচ দিয়ে AND করা হচ্ছে।";
+        mask._boxes.forEach(function (box) { box.classList.add("hi"); });
+        return wait(900);
+      }).then(function () {
+        mask._boxes.forEach(function (box) { box.classList.remove("hi"); });
+        var fb = bitsOf(finalValue, W);
+        var chain = Promise.resolve();
+        fb.forEach(function (bit, i) {
+          chain = chain.then(function () {
+            return wait(190).then(function () {
+              paint(result._boxes[i], bit);
+              result._boxes[i].classList.add("hi");
+              return wait(120).then(function () { result._boxes[i].classList.remove("hi"); });
+            });
+          });
+        });
+        return chain;
+      }).then(function () {
+        say.innerHTML = "বাকি রইল <b>" + finalValue + "</b> — ঠিক যে টুকরোটি চাওয়া হয়েছিল, বাকি সব বাদ।";
+      });
+    };
+  }
+
+  /* ---------- সব চিত্র চালু করা ---------- */
+
+  var BUILDERS = {
+    sum: animSum,
+    scan: animScan,
+    add: animAdd,
+    shift: animShift,
+    extract: animExtract
+  };
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-anim]"), function (fig) {
+    var kind = fig.getAttribute("data-anim");
+    var builder = BUILDERS[kind];
+    if (builder) register(fig, builder(fig));
+  });
+
+  /* ---------- পর্ব ৮ — ধাপে ধাপে ---------- */
+
+  var READ = 4, WRITE = 2, EXEC = 1;
+
+  var STEPS = [
+    {
+      code: "int perms = 0;",
+      value: 0,
+      changed: [],
+      say: "এখনো কোনো অনুমতি দেওয়া হয়নি। তিনটি সুইচই বন্ধ, তাই সংখ্যাটি <b>0</b>।"
+    },
+    {
+      code: 'perms |= read;      <span class="cm">// read = 4 → 100</span>',
+      value: READ,
+      changed: ["flag-read"],
+      say: "OR পড়ার সুইচটি <b>চালু</b> করল। বাকি দুটিতে হাতই দিল না — এটাই OR-এর প্রতিশ্রুতি। মান এখন <b>4</b>।"
+    },
+    {
+      code: 'perms |= write;     <span class="cm">// write = 2 → 010</span>',
+      value: READ | WRITE,
+      changed: ["flag-write"],
+      say: "আবার OR, এবার লেখার জন্য। পড়ার সুইচ চালুই থাকল, দুটি মিলে মান দাঁড়াল <b>6</b>।"
+    },
+    {
+      code: 'if ((perms &amp; write) != 0) { ... }',
+      value: READ | WRITE,
+      changed: ["flag-write"],
+      say: "AND কিছু বদলায় না, শুধু প্রশ্ন করে। লেখার সুইচ ছাড়া বাকি সব ঢেকে দিল, আর যা রইল তা শূন্য নয় — অর্থাৎ <b>লেখার অনুমতি আছে</b>। মান অপরিবর্তিত।"
+    },
+    {
+      code: 'perms ^= execute;   <span class="cm">// execute = 1 → 001</span>',
+      value: READ | WRITE | EXEC,
+      changed: ["flag-exec"],
+      say: "XOR চালানোর সুইচটি উল্টে দিল। বন্ধ ছিল, তাই এখন চালু। তিনটিই চালু, মান <b>7</b> — <code>chmod 7</code> ঠিক এটাই বোঝায়।"
+    },
+    {
+      code: 'perms &amp;= ~write;    <span class="cm">// ~write → 101</span>',
+      value: READ | EXEC,
+      changed: ["flag-write"],
+      say: "NOT বানাল \"লেখা ছাড়া সব\", আর AND শুধু সেগুলোই রাখল। লেখার অনুমতি <b>মুছে গেল</b>, পড়া আর চালানো টিকে রইল। মান নেমে <b>5</b>।"
+    },
+    {
+      code: 'perms ^= execute;   <span class="cm">// আবার উল্টে দিন</span>',
+      value: READ,
+      changed: ["flag-exec"],
+      say: "একই সুইচে দ্বিতীয়বার XOR করায় প্রথমবারের কাজটি <b>বাতিল</b> হয়ে গেল। এই ফিরে আসাই XOR-এর স্বাক্ষর। আবার <b>4</b> — শুধু পড়ার অনুমতি।"
+    }
+  ];
+
+  var idx = 0, autoTimer = null;
+  var FLAGS = [
+    { id: "flag-read", mask: READ },
+    { id: "flag-write", mask: WRITE },
+    { id: "flag-exec", mask: EXEC }
+  ];
+
+  function draw() {
+    var step = STEPS[idx];
+    document.getElementById("w-line").innerHTML = step.code;
+    document.getElementById("w-say").innerHTML = step.say;
+    document.getElementById("w-value").textContent = step.value;
+    document.getElementById("w-count").textContent = "ধাপ " + idx + " / " + (STEPS.length - 1);
+
+    FLAGS.forEach(function (f) {
+      var wrap = document.getElementById(f.id);
+      var box = wrap.querySelector(".bit");
+      var on = (step.value & f.mask) !== 0;
+      paint(box, on ? 1 : 0);
+      wrap.classList.toggle("changed", step.changed.indexOf(f.id) !== -1);
+    });
+
+    document.getElementById("w-next").disabled = idx >= STEPS.length - 1;
+  }
+
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    document.getElementById("w-auto").textContent = "নিজে থেকে চলুক";
+  }
+
+  document.getElementById("w-next").addEventListener("click", function () {
+    stopAuto();
+    if (idx < STEPS.length - 1) { idx++; draw(); }
+  });
+
+  document.getElementById("w-restart").addEventListener("click", function () {
+    stopAuto();
+    idx = 0;
+    draw();
+  });
+
+  document.getElementById("w-auto").addEventListener("click", function () {
+    if (autoTimer) { stopAuto(); return; }
+    if (idx >= STEPS.length - 1) { idx = 0; draw(); }
+    document.getElementById("w-auto").textContent = "থামান";
+    autoTimer = setInterval(function () {
+      if (idx >= STEPS.length - 1) { stopAuto(); return; }
+      idx++;
+      draw();
+    }, 3400);
+  });
+
+  draw();
+})();
+</script>
+
+</body>
+</html>

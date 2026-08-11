@@ -1,0 +1,87 @@
+# Repo-wide rules. Per-language rules live in <language>/.gitignore.
+
+# ---------- OS ----------
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# ---------- Editors / tooling ----------
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+*.log
+**/.claude/settings.local.json
+
+# ---------- Safety net for tracks that don't have their own .gitignore yet ----------
+# `exercism download` creates a new top-level folder per track. Until that folder
+# gets its own .gitignore, these keep build output from being committed by accident
+# (node_modules/ alone can be tens of thousands of files). A deeper
+# <language>/.gitignore can override any of these with a `!` rule.
+
+# Generic build output
+build/
+bin/
+out/
+dist/
+target/
+
+# Node / JS / TS
+node_modules/
+.next/
+.parcel-cache/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+*.egg-info/
+
+# JVM (Java / Kotlin / Scala / Clojure)
+*.class
+.gradle/
+.metals/
+.bloop/
+.bsp/
+.cpcache/
+
+# C / C++ / CMake
+*.obj
+*.lo
+*.slo
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+
+# Elixir / Erlang
+_build/
+deps/
+*.beam
+.elixir_ls/
+
+# Haskell
+.stack-work/
+dist-newstyle/
+
+# Zig
+.zig-cache/
+zig-cache/
+zig-out/
+
+# Swift
+.build/
+.swiftpm/
+
+# Ruby
+.bundle/
+vendor/bundle/

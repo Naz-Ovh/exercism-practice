@@ -1,0 +1,17 @@
+# Rust / Cargo generated files
+# (Exercism also drops a .gitignore inside each exercise; this covers the whole track.)
+
+# Build output
+target/
+**/target/
+debug/
+
+# Backup files from rustfmt / rustc
+**/*.rs.bk
+*.pdb
+
+# Lockfiles — practice exercises are libraries, so these are regenerated
+Cargo.lock
+
+# Tooling
+.idea/

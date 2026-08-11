@@ -1,0 +1,32 @@
+# Go generated files
+
+# Compiled binaries and plugins
+# NOTE: `go build` on a main package emits an extension-less binary that no
+# pattern here can match. Exercism Go exercises are library packages (see
+# go.mod: `module lasagna`, not main), so this doesn't come up. If you ever
+# `go build -o foo`, add `foo` below.
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.a
+*.o
+
+# Test binaries, debugger, coverage output
+*.test
+*.out
+__debug_bin*
+coverage.txt
+coverage.html
+
+# go.sum is deliberately NOT ignored: it is a cryptographic checksum file, not a
+# resolution cache. Committing it is Go's official guidance, and without it
+# `go test` hard-fails on any exercise that has a dependency.
+
+# Workspace / tooling
+go.work
+go.work.sum
+vendor/
+bin/
+.idea/
