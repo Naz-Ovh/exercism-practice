@@ -1,4 +1,4 @@
-name: 'etl'
+name: 'hello_world'
 environment:
   sdk: '>=3.2.0 <4.0.0'
 dev_dependencies:
